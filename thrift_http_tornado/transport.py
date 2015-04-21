@@ -20,6 +20,7 @@ class THTTPTornadoTransport(thrift.transport.TTransport.TTransportBase):
         self._endpoint = endpoint_url
         self._response_queue = toro.Queue(io_loop=self.io_loop)
         self._kwargs = kwargs
+        self._headers = {'Content-Type': 'application/x-thrift'}
 
     def open(self, *args, **kwargs):
         pass
@@ -49,6 +50,8 @@ class THTTPTornadoTransport(thrift.transport.TTransport.TTransportBase):
     @tornado.gen.coroutine
     def fetch(self, buf):
         request = tornado.httpclient.HTTPRequest(url=self._endpoint,
+                                                 headers=self._headers,
                                                  method="POST", body=buf)
-        r = yield self._client.fetch(request, self._kwargs)
+        r = yield self._client.fetch(request)
+
         self._response_queue.put(r.body)
