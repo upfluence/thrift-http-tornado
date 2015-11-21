@@ -28,7 +28,11 @@ class THTTPTornadoTransport(thrift.transport.TTransport.TTransportBase):
     @tornado.gen.coroutine
     def readFrame(self):
         result = yield self._response_queue.get()
-        raise tornado.gen.Return(result)
+
+        if isinstance(result, thrift.transport.TTransport.TTransportException):
+            raise result
+        else:
+            raise tornado.gen.Return(result)
 
     def close(self):
         pass
@@ -52,6 +56,11 @@ class THTTPTornadoTransport(thrift.transport.TTransport.TTransportBase):
         request = tornado.httpclient.HTTPRequest(url=self._endpoint,
                                                  headers=self._headers,
                                                  method="POST", body=buf)
-        r = yield self._client.fetch(request)
+        try:
+            r = yield self._client.fetch(request)
 
-        self._response_queue.put(r.body)
+            self._response_queue.put(r.body)
+        except Exception as e:
+            self._response_queue.put(
+                thrift.transport.TTransport.TTransportException(
+                    message=str(e)))
