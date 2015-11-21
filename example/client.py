@@ -15,7 +15,10 @@ def communicate():
 
     futures = [client.scrape('http://google.com/') for i in xrange(100)]
 
-    yield futures
+    try:
+        yield futures
+    except Exception as e:
+        print e
 
     io_loop.stop()
 
