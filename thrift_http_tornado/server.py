@@ -18,6 +18,13 @@ class THTTPTornadoHandler(tornado.web.RequestHandler):
 
 
 class THTTPTornadoServer(object):
+    @classmethod
+    def build_endpoint(cls, processor, iprot_factory, oprot_factory=None,
+                       path="/"):
+        srv = cls(processor, iprot_factory, oprot_factory, path=path)
+
+        return (path, THTTPTornadoHandler, dict(thrift_server=srv))
+
     def __init__(self, processor, iprot_factory, oprot_factory=None, port=8989,
                  path="/", **kwargs):
         self._processor = processor
