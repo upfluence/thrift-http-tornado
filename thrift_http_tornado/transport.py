@@ -30,7 +30,9 @@ class THTTPTornadoTransport(thrift.transport.TTransport.TTransportBase):
         result = yield self._response_queue.get()
 
         if 'error' in result:
-            raise result['error']
+            raise thrift.transport.TTransport.TTransportException(
+                thrift.transport.TTransport.TTransportException.UNKNOWN,
+                str(result['error']))
         else:
             raise tornado.gen.Return(result['response'])
 
