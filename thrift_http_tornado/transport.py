@@ -37,7 +37,7 @@ class THTTPTornadoTransport(thrift.transport.TTransport.TTransportBase):
             raise tornado.gen.Return(result['response'])
 
     def close(self):
-        pass
+        self._wbuf.close()
 
     def isOpen(self):
         return True
@@ -50,7 +50,8 @@ class THTTPTornadoTransport(thrift.transport.TTransport.TTransportBase):
 
     @tornado.gen.coroutine
     def flush(self):
-        self.fetch(self._wbuf.getvalue())
+        yield self.fetch(self._wbuf.getvalue())
+        self._wbuf.close()
         self._wbuf = cStringIO.StringIO()
 
     @tornado.gen.coroutine

@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='thrift_http_tornado',
-      version='0.1.2',
+      version='0.1.3',
       description='Thirft transport implementation over the HTTP protocol',
       author='Alexis Montagne',
       author_email='alexis.montagne@upfluence.co',
